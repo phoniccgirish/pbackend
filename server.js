@@ -1,24 +1,29 @@
-
 import "dotenv/config";
-
 import express from "express";
-import cors from "cors"; 
+import cors from "cors";
 import apiRoutes from "./routes/api.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
+// Render sets the PORT environment variable automatically. Use that.
+const PORT = process.env.PORT || 3000;
 
-const corsOptions = {
-  origin: "http://localhost:5173", 
-  optionsSuccessStatus: 200, 
-};
-app.use(cors(corsOptions)); 
+// --- FIX: Remove specific corsOptions ---
+// This allows requests from ANY origin (like localhost AND your Vercel site)
+app.use(cors());
+// --- End of Fix ---
 
+app.use(express.json()); // Parse JSON bodies
 
-app.use(express.json()); 
-
+// Routes
 app.use("/api", apiRoutes);
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  // Use 0.0.0.0 to listen on all available network interfaces, required by Render
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Optional: Add a basic root route for testing
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
 });
