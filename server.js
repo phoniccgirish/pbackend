@@ -1,27 +1,33 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import apiRoutes from "./routes/api.js";
 
 const app = express();
-// Render sets the PORT environment variable automatically. Use that.
 const PORT = process.env.PORT || 3000;
 
-// --- FIX: Remove specific corsOptions ---
-// This allows requests from ANY origin (like localhost AND your Vercel site)
+// Fix for ES Modules (__dirname not defined)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middlewares
 app.use(cors());
-// --- End of Fix ---
+app.use(express.json());
 
-app.use(express.json()); // Parse JSON bodies
-
-// Routes
+// API routes
 app.use("/api", apiRoutes);
+
+// ✅ Serve frontend build files
+app.use(express.static(path.join(__dirname, "../pclient/dist")));
+
+// ✅ Catch-all — send index.html for SPA routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../pclient/dist", "index.html"));
+});
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-app.get("/", (req, res) => {
-  res.send("Backend is running!");
+  console.log(`🚀 Server running on port ${PORT}`);
 });
