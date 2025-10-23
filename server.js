@@ -19,11 +19,9 @@ app.use("/api", apiRoutes);
 
 // Start server
 app.listen(PORT, () => {
-  // Use 0.0.0.0 to listen on all available network interfaces, required by Render
   console.log(`Server running on port ${PORT}`);
 });
 
-// Optional: Add a basic root route for testing
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
